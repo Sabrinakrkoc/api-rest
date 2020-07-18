@@ -1,0 +1,181 @@
+const express = require('express');
+const bcrypt = require('bcrypt');
+const _ = require('underscore');
+const cors = require('cors');
+const router = express.Router();
+
+const Usuario = require('../models/usuario')
+
+router.get('/usuarios', cors(), (req, res)=>{
+   let desde = req.query.desde || 0
+   desde = Number(desde)
+   let limite = req.query.limite || 5
+   limite = Number(limite)
+    Usuario.find({estado: true}, 'nombre email role estado img')
+    .skip(desde)
+    .limit(limite)
+    .exec((err, usuarios) =>{
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+
+        res.json({
+            ok: true,
+            usuarios
+        })
+    })
+})
+
+router.get, cors(), ('/usuario/:id', (req, res)=>{
+    // console.log('traer un usuario')
+    let id = req.params.id;
+    Usuario.findById(id, (err, usuario)=>{
+        if(err) {
+            return res.status(400).json({
+                ok:false,
+                err
+            })
+        }
+        res.json({
+            ok:true,
+            usuario
+        })
+    })
+})
+
+// router.post('/usuario', (req, res)=>{
+//     // console.log('crear usuario')
+//     let body = req.body;
+//     // res.end(body);
+//     // console.log(body)
+//     let usuario = new Usuario({
+//         nombre: body.nombre,
+//         email: body.email,
+//         password: body.password,
+//         role: body.role
+//     })
+
+//     usuario.save((err, usuarioDB) =>{
+//         if(err){
+//             return res.status(400).json({
+//                 ok: false,
+//                 err
+//             })
+//         }
+//         res.json({
+//             ok: true,
+//             usuario: usuarioDB
+//         })
+//     })
+// })
+
+router.post('/usuario', (req, res)=>{
+    //console.log("Crear un usuario")
+    //res.end("Crear usuario")
+    let body = req.body;
+
+    let usuario = new Usuario({
+        nombre: body.nombre, 
+        email: body.email,
+        password: bcrypt.hashSync(body.password, 10),
+        role: body.role
+    })
+
+    usuario.save((err, usuarioDB)=>{
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+
+        res.json({
+            ok: true,
+            usuario: usuarioDB
+        })
+    })
+    })
+router.put('/usuario/:id', (req, res)=>{
+    //console.log('actualizar usuarios')
+    let id = req.params.id;
+    let body = _.pick(req.body, ['nombre', 'email', 'role', 'estado'])
+    Usuario.findByIdAndUpdate(id, body, (err, usuario) =>{
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+        if(!usuario){
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+            res.json({
+                ok: true,
+                usuario
+            })
+
+    })
+})
+
+
+router.get('/usuariosborrados', (req, res)=>{
+    let desde = req.query.desde || 0
+    desde = Number(desde)
+    let limite = req.query.limite || 5
+    limite = Number(limite)
+     Usuario.find({estado: false}, 'nombre email role estado img')
+     .skip(desde)
+     .limit(limite)
+     .exec((err, usuarios) =>{
+         if(err) {
+             return res.status(400).json({
+                 ok: false,
+                 err
+             })
+         }
+ 
+         res.json({
+             ok: true,
+             usuarios
+         })
+     })
+ })
+
+router.delete('/usuario/:id', (req, res)=>{
+    // console.log('marca del usuario borrado')
+    let id = req.params.id;
+
+    let cambiarEstado = {
+        estado: false
+    }
+
+    Usuario.findByIdAndUpdate(id, cambiarEstado,(err, usuarioBorrado)=>{
+        if(err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+        if(!usuarioBorrado){
+        return res.status(400).json({
+            ok: false,
+            err
+        })}
+        res.json({
+            ok:true,
+            usuario: usuarioBorrado
+    
+        })
+    })
+    
+
+    // Usuario.findByIdAndRemove(id, (err, usuarioBorrado) =>{})
+})
+
+module.exports = router;
