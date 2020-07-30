@@ -7,10 +7,10 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
 let urlDB;
 
-process.env.MONGO_URI = '#';
+process.env.MONGO_URI = 'mongodb+srv://#@cluster0.tjbcv.mongodb.net/cursosit';
 
 if(process.env.NODE_ENV === 'dev'){
-    urlDB = "#"
+    urlDB = "mongodb+srv://#@cluster0.tjbcv.mongodb.net/cursosit"
 }else{
     urlDB = process.env.MONGO_URI
 }
