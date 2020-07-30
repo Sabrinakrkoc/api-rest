@@ -46,35 +46,10 @@ router.get, cors(), ('/usuario/:id', (req, res)=>{
     })
 })
 
-// router.post('/usuario', (req, res)=>{
-//     // console.log('crear usuario')
-//     let body = req.body;
-//     // res.end(body);
-//     // console.log(body)
-//     let usuario = new Usuario({
-//         nombre: body.nombre,
-//         email: body.email,
-//         password: body.password,
-//         role: body.role
-//     })
 
-//     usuario.save((err, usuarioDB) =>{
-//         if(err){
-//             return res.status(400).json({
-//                 ok: false,
-//                 err
-//             })
-//         }
-//         res.json({
-//             ok: true,
-//             usuario: usuarioDB
-//         })
-//     })
-// })
 
 router.post('/usuario', (req, res)=>{
-    //console.log("Crear un usuario")
-    //res.end("Crear usuario")
+   
     let body = req.body;
 
     let usuario = new Usuario({
@@ -99,7 +74,6 @@ router.post('/usuario', (req, res)=>{
     })
     })
 router.put('/usuario/:id', (req, res)=>{
-    //console.log('actualizar usuarios')
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'role', 'estado'])
     Usuario.findByIdAndUpdate(id, body, (err, usuario) =>{
@@ -148,7 +122,6 @@ router.get('/usuariosborrados', (req, res)=>{
  })
 
 router.delete('/usuario/:id', (req, res)=>{
-    // console.log('marca del usuario borrado')
     let id = req.params.id;
 
     let cambiarEstado = {
@@ -175,7 +148,6 @@ router.delete('/usuario/:id', (req, res)=>{
     })
     
 
-    // Usuario.findByIdAndRemove(id, (err, usuarioBorrado) =>{})
 })
 
 module.exports = router;
